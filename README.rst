@@ -1,18 +1,3 @@
-==========
-Schematics
-==========
-
-.. rubric:: Python Data Structures for Humans™.
-
-.. image:: https://travis-ci.org/schematics/schematics.svg?branch=master
-   :target: https://travis-ci.org/schematics/schematics
-   :alt: Build Status
-
-.. image:: https://coveralls.io/repos/github/schematics/schematics/badge.svg?branch=master
-   :target: https://coveralls.io/github/schematics/schematics?branch=master 
-   :alt: Coverage
-
-
 About
 =====
 
@@ -105,14 +90,3 @@ Add the field and validation passes.
   >>> person.website = 'http://www.amontobin.com/'
   >>> person.validate()
   >>>
-
-
-.. _coverage:
-
-Testing & Coverage support
-==========================
-
-Run coverage and check the missing statements. ::
-
-  $ coverage run --source schematics -m py.test && coverage report
-
