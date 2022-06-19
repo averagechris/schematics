@@ -16,6 +16,24 @@ Schematics
 About
 =====
 
+This is a Fork from the hard work of the maintainers at
+https://github.com/schematics/schematics.
+Here's a summary of the changes:
++ add support for python 3.10+
++ drop support for python ??? TODO
++ run black and isort on the code base
++ package with flit, updating to pyproject.toml
++ add development environment setup with nix and package as a nix flake.
++ and that's it!
+
+I don't plan on any changes to this library aside from maintaining
+support for modern python versions as long as this library is still
+a dependency for projects that I'm involved with which is unlikely to
+be forever. I would recommend planning on porting your validation code
+to another validation / serialization library that is actively maintained.
+But until then I'll do my best to keep this current with new python
+versions. Thank you to the original maintainers for all of their work!
+
 **Project documentation:** https://schematics.readthedocs.io/en/latest/
 
 Schematics is a Python library to combine types into structures, validate them,

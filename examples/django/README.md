@@ -1,16 +1,17 @@
-#### Linkify
+# Linkify
 
-`Linkify` is small app similar to `reddit/hackernews` without comments and votes features.
-App demonstrates how to use `Schematics` with `Django` to create APIs.
+`Linkify` is small app similar to `reddit/hackernews` without comments
+and votes features. App demonstrates how to use `Schematics` with
+`Django` to create APIs.
 
-#### Installation
+## Installation
 
 - Create a new virtualenv for `python3`.
 - Then `pip install -r requirements`.
 - `./manage.py runserver`.
 - To run tests, `./test`
 
-#### Endpoints
+## Endpoints
 
 - `/links` -> List all links (`GET`).
 - `/links/` -> Create a link (`POST`).
@@ -18,11 +19,15 @@ App demonstrates how to use `Schematics` with `Django` to create APIs.
 - `/links/<id>/` -> Update a link (`PATCH`).
 - `/links/<id>/` -> Delete a link (`DELETE`).
 
-#### Examples
+## Examples
 
 ```python
 # Create a new link
-In [96]: data = {'title': 'Brubeck', 'url': 'https://github.com/j2labs/brubeck', 'tags':['Web Framework', 'Python']}
+In [96]: data = {
+    'title': 'Brubeck',
+    'url': 'https://github.com/j2labs/brubeck',
+    'tags':['Web Framework', 'Python']
+}
 
 In [97]: r = requests.post('http://127.0.0.1:8000/links/', json=data)
 

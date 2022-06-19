@@ -31,19 +31,45 @@
         # };
       };
 
-      schematics = with python310Packages;
-        buildPythonPackage {
-          inherit src;
-          propagatedBuildInputs = [];
-          propagatedNativeBuildInputs = [];
-          checkInputs = [pytestCheckHook];
-          format = "flit";
-          pname = "schematics-py310-plus";
-          version = "0.0.1";
-        };
+      mkSchematics = pyPackageSet:
+        with pyPackageSet;
+          buildPythonPackage {
+            inherit src;
+            propagatedBuildInputs = [];
+            propagatedNativeBuildInputs = [];
+            checkInputs = mkTestDependencies pyPackageSet;
+            format = "flit";
+            pname = "schematics-py310-plus";
+            version = "0.0.1";
+          };
+      mkTestDependencies = pyPackageSet:
+        with pyPackageSet; [
+          bson
+          pymongo
+          pytest
+          pytestCheckHook
+          python-dateutil
+        ];
+
+      testDependencies = mkTestDependencies pkgs.python310Packages;
+      schematics = mkSchematics pkgs.python310Packages;
+      schematics39 = mkSchematics pkgs.python39Packages;
+      # TODO FIXME schematics311 seems fairly straightforward?
+      #
+      # >   File "/build/docutils-0.18.1/test/package_unittest.py", line 102, in loadTestModules
+      # >     module = import_module(mod)
+      # >              ^^^^^^^^^^^^^^^^^^
+      # >   File "/build/docutils-0.18.1/test/package_unittest.py", line 133, in import_module
+      # >     mod = __import__(name)
+      # >           ^^^^^^^^^^^^^^^^
+      # >   File "/build/docutils-0.18.1/test/test_parsers/test_rst/test_directives/test_tables.py", line 67, in <module>
+      # >     null_bytes_exception = DocutilsTestSupport.exception_data(null_bytes)[0]
+      # >                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^
+      # > TypeError: 'NoneType' object is not subscriptable
+      # schematics311 = mkSchematics pkgs.python311Packages;
     in {
       checks = {
-        inherit schematics;
+        inherit schematics schematics39;
 
         pre-commit = pre-commit-hooks.lib.${system}.run {
           inherit src;
@@ -51,6 +77,17 @@
             alejandra.enable = true;
             black.enable = true;
             isort.enable = true;
+            flake8 = {
+              enable = false;
+              entry = "${pkgs.writeShellApplication {
+                name = "check-flake8";
+                runtimeInputs = with python310Packages; [flake8];
+                text = "flake8 schematics";
+              }}/bin/check-flake8";
+              name = "flake8";
+              pass_filenames = false;
+              types = ["file" "python"];
+            };
             markdown-linter = {
               enable = true;
               entry = with pkgs; "${mdl}/bin/mdl -g";
@@ -60,7 +97,7 @@
               types = ["markdown"];
             };
             pyright = {
-              # cant find imports 😢
+              # FIXME
               enable = false;
               entry = "${pkgs.writeShellApplication {
                 name = "check-pyright";
@@ -95,25 +132,22 @@
             export PYTHONDONTWRITEBYTECODE=1
           '';
         inputsFrom = [self.packages.${system}.default];
-        buildInputs = with python310Packages; [
-          pkgs.cachix
-          pkgs.nodePackages.pyright
-          self.packages.${system}.default
+        buildInputs = with pkgs.python310Packages;
+          testDependencies
+          ++ [
+            pkgs.cachix
+            pkgs.nodePackages.pyright
+            self.packages.${system}.default
 
-          # python dev deps (but not CI test deps)
-          black
-          coverage
-          flake8
-          pymongo
-          python-dateutil
-          bson
-          flit
-          ipdb
-          ipython
-          isort
-          pytest
-          python
-        ];
+            # python dev deps (but not CI test deps)
+            black
+            flake8
+            flit
+            ipdb
+            ipython
+            isort
+            python
+          ];
       };
 
       formatter = pkgs.alejandra;

@@ -20,14 +20,14 @@ __all__ = [
 ]
 
 
-### Character ranges
+# Character ranges
 
 HEX = "0-9A-F"
 ALPHA = "A-Z"
 ALPHANUM = "A-Z0-9"
 
 
-### IP address patterns
+# IP address patterns
 
 IPV4_OCTET = "( 25[0-5] | 2[0-4][0-9] | [0-1]?[0-9]{1,2} )"
 IPV4 = r"( ((%(oct)s\.){3} %(oct)s) )" % {"oct": IPV4_OCTET}
@@ -89,7 +89,7 @@ class IPv6Type(IPAddressType):
         )
 
 
-### MAC address
+# MAC address
 
 
 class MACAddressType(StringType):
@@ -120,7 +120,7 @@ class MACAddressType(StringType):
         return ":".join(value[i : i + 2] for i in range(0, len(value), 2))
 
 
-### URI patterns
+# URI patterns
 
 GEN_DELIMS = set(":/?#[]@")
 SUB_DELIMS = set("!$&'()*+,;=")

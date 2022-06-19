@@ -1,3 +1,5 @@
+this change log is not maintained in this fork
+
 2.1.0 / Unreleased
 ==================
 **[BREAKING CHANGE]**
