@@ -13,7 +13,6 @@ authors = [
     {name="Paul Eipper", email="paul@nkey.com.br"}
 ]
 readme = "README.rst"
-version = "0.0.1"
 description = "Forked from schematics/schematics: Python Data Structures for Humans, supporting python 3.10 plus."
 license = {file="LICENSE"}
 homepage='https://github.com/schematics/schematics'
@@ -33,6 +32,7 @@ include = [
     "LICENSE",
     "README.rst",
 ]
+dynamic = ["version"]
 
 [project.urls]
 Home = "http://github.com/averagechris/schematics/"

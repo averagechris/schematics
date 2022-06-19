@@ -19,24 +19,15 @@
     ...
   }:
     flake-utils.lib.eachSystem [flake-utils.lib.system.x86_64-linux] (system: let
-      # flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {
         inherit system;
       };
       inherit (pkgs) lib;
       src = lib.cleanSource ./.;
-      python310Packages = pkgs.python310Packages.override {
-        # overrides = final: prev: {
-        #   typer = prev.typer.overrideAttrs (_: {meta.broken = false;});
-        # };
-      };
-
       mkSchematics = pyPackageSet:
         with pyPackageSet;
           buildPythonPackage {
             inherit src;
-            propagatedBuildInputs = [];
-            propagatedNativeBuildInputs = [];
             checkInputs = mkTestDependencies pyPackageSet;
             format = "flit";
             pname = "schematics-py310-plus";
@@ -67,9 +58,18 @@
       # >                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^
       # > TypeError: 'NoneType' object is not subscriptable
       # schematics311 = mkSchematics pkgs.python311Packages;
+
+      get_schematics_version = pkgs.writeShellApplication {
+        name = "schematics_version";
+        runtimeInputs = with pkgs; [coreutils ripgrep];
+        text = ''
+          rg -F "__version__ = " schematics/__init__.py \
+          | cut -d = -f 2
+        '';
+      };
     in {
       checks = {
-        inherit schematics schematics39;
+        inherit schematics schematics39 get_schematics_version;
 
         pre-commit = pre-commit-hooks.lib.${system}.run {
           inherit src;
@@ -81,7 +81,7 @@
               enable = false;
               entry = "${pkgs.writeShellApplication {
                 name = "check-flake8";
-                runtimeInputs = with python310Packages; [flake8];
+                runtimeInputs = with pkgs.python310Packages; [flake8];
                 text = "flake8 schematics";
               }}/bin/check-flake8";
               name = "flake8";
@@ -101,7 +101,7 @@
               enable = false;
               entry = "${pkgs.writeShellApplication {
                 name = "check-pyright";
-                runtimeInputs = with python310Packages; [
+                runtimeInputs = with pkgs.python310Packages; [
                   pkgs.nodePackages.pyright
                   pytest
                   python
@@ -117,9 +117,22 @@
         };
       };
 
-      packages.default = schematics;
-      apps.default = flake-utils.lib.mkApp {
-        drv = python310Packages.pytest;
+      packages = {
+        inherit schematics39 schematics;
+        schematics310 = schematics;
+        default = schematics;
+      };
+      apps = rec {
+        pytest = flake-utils.lib.mkApp {
+          drv = pkgs.python310Packages.pytest;
+        };
+        default = pytest;
+        flit = flake-utils.lib.mkApp {
+          drv = pkgs.python310Packages.flit;
+        };
+        schematics_version = flake-utils.lib.mkApp {
+          drv = get_schematics_version;
+        };
       };
 
       devShells.default = pkgs.mkShell {
