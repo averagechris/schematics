@@ -61,10 +61,12 @@
 
       get_schematics_version = pkgs.writeShellApplication {
         name = "schematics_version";
-        runtimeInputs = with pkgs; [coreutils ripgrep];
+        runtimeInputs = with pkgs; [coreutils gnused ripgrep];
         text = ''
           rg -F "__version__ = " schematics/__init__.py \
-          | cut -d = -f 2
+          | cut -d = -f 2 \
+          | sed -e 's/__version__ = //' \
+          | sed 's/"//g'
         '';
       };
     in {
