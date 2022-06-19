@@ -30,7 +30,12 @@ def test_list_of_numbers():
     result = numbers.convert(["2", "0.5", "123", "2.999"], None)
     assert result == [2, 0.5, 123, 2.999]
     assert [type(item) for item in result] == [int, float, int, float]
-    assert [type(item) for item in numbers.to_primitive(result)] == [int, float, int, float]
+    assert [type(item) for item in numbers.to_primitive(result)] == [
+        int,
+        float,
+        int,
+        float,
+    ]
 
 
 def test_dict_or_list_of_ints():
@@ -75,7 +80,9 @@ def test_custom_type():
             return ShoutType
 
     assert (
-        UnionType((ShoutType, QuestionType), resolver=resolve).to_primitive("Hello, world!")
+        UnionType((ShoutType, QuestionType), resolver=resolve).to_primitive(
+            "Hello, world!"
+        )
         == "Hello, world!!!!"
     )
 
@@ -87,7 +94,9 @@ def test_option_collation():
     class DerivedStringType(StringType):
         pass
 
-    field = UnionType((IntType, DerivedStringType), required=True, max_value=100, max_length=50)
+    field = UnionType(
+        (IntType, DerivedStringType), required=True, max_value=100, max_length=50
+    )
     assert field.required is True
     assert field._types[IntType].required is True
     assert field._types[DerivedStringType].required is True
@@ -97,7 +106,9 @@ def test_option_collation():
 
 def test_parameterize_validate():
 
-    UnionType((IntType(min_value=1, strict=True), FloatType(min_value=0))).validate(0.00)
+    UnionType((IntType(min_value=1, strict=True), FloatType(min_value=0))).validate(
+        0.00
+    )
 
     UnionType((IntType(min_value=1), FloatType(min_value=0.5))).validate(0.75)
     with pytest.raises(ValidationError):

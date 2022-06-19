@@ -135,19 +135,19 @@ def test_validation_with_size_limits():
         c = Card({"users": None})
         c.validate()
 
-    assert exception.value.errors["users"] == [u"This field is required."]
+    assert exception.value.errors["users"] == ["This field is required."]
 
     with pytest.raises(DataError) as exception:
         c = Card({"users": []})
         c.validate()
 
-    assert exception.value.errors["users"] == [u"Please provide at least 1 item."]
+    assert exception.value.errors["users"] == ["Please provide at least 1 item."]
 
     with pytest.raises(DataError) as exception:
         c = Card({"users": [User(), User(), User()]})
         c.validate()
 
-    assert exception.value.errors["users"] == [u"Please provide no more than 2 items."]
+    assert exception.value.errors["users"] == ["Please provide no more than 2 items."]
 
 
 def test_list_field_required():
@@ -195,7 +195,7 @@ def test_list_model_field():
     class Card(Model):
         users = ListType(ModelType(User), min_size=1, required=True)
 
-    data = {"users": [{"name": u"Doggy"}]}
+    data = {"users": [{"name": "Doggy"}]}
     c = Card(data)
 
     c.users = None
@@ -203,7 +203,7 @@ def test_list_model_field():
         c.validate()
 
     errors = exception.value.errors
-    assert errors["users"] == [u"This field is required."]
+    assert errors["users"] == ["This field is required."]
 
 
 def test_list_model_field_exception_with_full_message():
@@ -217,7 +217,9 @@ def test_list_model_field_exception_with_full_message():
 
     with pytest.raises(DataError) as exception:
         g.validate()
-    assert exception.value.errors == {"users": {0: {"name": ["String value is too long."]}}}
+    assert exception.value.errors == {
+        "users": {0: {"name": ["String value is too long."]}}
+    }
 
 
 def test_compound_fields():
@@ -248,7 +250,9 @@ def test_mock_object_with_model_type():
         name = StringType(required=True)
         age = IntType(required=True)
 
-    assert isinstance(ListType(ModelType(User), min_size=1, required=True).mock()[-1], User)
+    assert isinstance(
+        ListType(ModelType(User), min_size=1, required=True).mock()[-1], User
+    )
 
 
 def test_issue_453_list_model_field_recursive_import():

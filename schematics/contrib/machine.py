@@ -9,7 +9,7 @@ def _callback_wrap(data, schema, transform, *args, **kwargs):
 
 
 class Machine:
-    """ A poor man's state machine. """
+    """A poor man's state machine."""
 
     states = ("raw", "converted", "validated", "serialized")
     transitions = (
@@ -37,7 +37,9 @@ class Machine:
     def _transition(self, trigger=None, src_state=None, dst_state=None):
         try:
             return next(
-                self._transitions(trigger=trigger, src_state=src_state, dst_state=dst_state)
+                self._transitions(
+                    trigger=trigger, src_state=src_state, dst_state=dst_state
+                )
             )
         except StopIteration:
             return None

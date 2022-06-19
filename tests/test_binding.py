@@ -77,8 +77,8 @@ def test_field_binding():
 
     valid_data = {
         "courses": [
-            {"id": "ENG103", "attending": [{"name": u"Danny"}, {"name": u"Sandy"}]},
-            {"id": "ENG203", "attending": [{"name": u"Danny"}, {"name": u"Sandy"}]},
+            {"id": "ENG103", "attending": [{"name": "Danny"}, {"name": "Sandy"}]},
+            {"id": "ENG203", "attending": [{"name": "Danny"}, {"name": "Sandy"}]},
         ]
     }
 
@@ -104,7 +104,10 @@ def test_serializable_doesnt_keep_global_state():
     location_US = Location({"country_code": "US"})
     location_IS = Location({"country_code": "IS"})
 
-    assert location_US._schema.fields["country_name"] is location_IS._schema.fields["country_name"]
+    assert (
+        location_US._schema.fields["country_name"]
+        is location_IS._schema.fields["country_name"]
+    )
 
 
 def test_field_inheritance():

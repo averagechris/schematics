@@ -48,7 +48,9 @@ __all__ = [
 
 def fill_template(template, min_length, max_length):
     return template % random_string(
-        get_value_in(min_length, max_length, padding=len(template) - 2, required_length=1)
+        get_value_in(
+            min_length, max_length, padding=len(template) - 2, required_length=1
+        )
     )
 
 
@@ -73,7 +75,9 @@ def get_range_endpoints(min_length, max_length, padding=0, required_length=0):
 
 
 def get_value_in(min_length, max_length, padding=0, required_length=0):
-    return random.randint(*get_range_endpoints(min_length, max_length, padding, required_length))
+    return random.randint(
+        *get_range_endpoints(min_length, max_length, padding, required_length)
+    )
 
 
 _alphanumeric = string.ascii_letters + string.digits
@@ -209,7 +213,9 @@ class BaseType(metaclass=TypeMeta):
         self.choices = choices
         self.deserialize_from = listify(deserialize_from)
 
-        self.validators = [getattr(self, validator_name) for validator_name in self._validators]
+        self.validators = [
+            getattr(self, validator_name) for validator_name in self._validators
+        ]
         if validators:
             self.validators += (prepare_validator(func, 2) for func in validators)
 
@@ -226,7 +232,8 @@ class BaseType(metaclass=TypeMeta):
         self.is_compound = False
 
         self.export_mapping = dict(
-            (format, getattr(self, fname)) for format, fname in self.EXPORT_METHODS.items()
+            (format, getattr(self, fname))
+            for format, fname in self.EXPORT_METHODS.items()
         )
 
     def __repr__(self):
@@ -353,7 +360,9 @@ class BaseType(metaclass=TypeMeta):
     def validate_choices(self, value, context):
         if self.choices is not None:
             if value not in self.choices:
-                raise ValidationError(self.messages["choices"].format(str(self.choices)))
+                raise ValidationError(
+                    self.messages["choices"].format(str(self.choices))
+                )
 
     def mock(self, context=None):
         if not self.required and not random.choice([True, False]):
@@ -429,7 +438,9 @@ class StringType(BaseType):
                 try:
                     return str(value, "utf-8")
                 except UnicodeError as exc:
-                    raise ConversionError(self.messages["decode"].format(value)) from exc
+                    raise ConversionError(
+                        self.messages["decode"].format(value)
+                    ) from exc
             elif isinstance(value, bool):
                 pass
             else:
@@ -690,7 +701,9 @@ class DateType(BaseType):
             except (ValueError, TypeError):
                 continue
 
-        raise ConversionError(self.conversion_errmsg.format(value, ", ".join(self.formats)))
+        raise ConversionError(
+            self.conversion_errmsg.format(value, ", ".join(self.formats))
+        )
 
     def to_primitive(self, value, context=None):
         return value.strftime(self.serialized_format)
@@ -826,7 +839,9 @@ class DateTimeType(BaseType):
         """Create a datetime.datetime field."""
 
         if tzd not in ("require", "allow", "utc", "reject"):
-            raise ValueError("DateTimeType.__init__() got an invalid value for parameter 'tzd'")
+            raise ValueError(
+                "DateTimeType.__init__() got an invalid value for parameter 'tzd'"
+            )
         self.formats = listify(formats)
         self.serialized_format = serialized_format or self.SERIALIZED_FORMAT
         self.parser = parser
@@ -847,7 +862,12 @@ class DateTimeType(BaseType):
             microsecond=random.randrange(1000000),
         )
 
-        if self.tzd == "reject" or self.drop_tzinfo or self.tzd == "allow" and random.randrange(2):
+        if (
+            self.tzd == "reject"
+            or self.drop_tzinfo
+            or self.tzd == "allow"
+            and random.randrange(2)
+        ):
             return dt
         if self.convert_tz:
             return dt.replace(tzinfo=self.UTC)
@@ -863,7 +883,9 @@ class DateTimeType(BaseType):
             if value.tzinfo is None:
                 if not self.drop_tzinfo:
                     if self.tzd == "require":
-                        raise ConversionError(self.messages["tzd_require"].format(value))
+                        raise ConversionError(
+                            self.messages["tzd_require"].format(value)
+                        )
                     if self.tzd == "utc":
                         value = value.replace(tzinfo=self.UTC)
             else:
@@ -885,14 +907,18 @@ class DateTimeType(BaseType):
                     continue
             else:
                 raise ConversionError(
-                    self.messages["parse_formats"].format(value, ", ".join(self.formats))
+                    self.messages["parse_formats"].format(
+                        value, ", ".join(self.formats)
+                    )
                 )
         elif self.parser:
             # Delegate to external parser.
             try:
                 dt = self.parser(value)
             except Exception as exc:
-                raise ConversionError(self.messages["parse_external"].format(value)) from exc
+                raise ConversionError(
+                    self.messages["parse_external"].format(value)
+                ) from exc
         else:
             # Use built-in parser.
             try:
@@ -930,7 +956,9 @@ class DateTimeType(BaseType):
         def p(name):
             return int(parts.get(name, 0))
 
-        microsecond = p("sec_frac") and p("sec_frac") * 10 ** (6 - len(parts["sec_frac"]))
+        microsecond = p("sec_frac") and p("sec_frac") * 10 ** (
+            6 - len(parts["sec_frac"])
+        )
         if "tzd_utc" in parts:
             tz = self.UTC
         elif "tzd_offset" in parts:
@@ -1122,7 +1150,9 @@ class GeoPointType(BaseType):
     def to_native(self, value, context=None):
         """Make sure that a geo-value is of type (x, y)"""
         if not isinstance(value, (tuple, list, dict)):
-            raise ConversionError(_("GeoPointType can only accept tuples, lists, or dicts"))
+            raise ConversionError(
+                _("GeoPointType can only accept tuples, lists, or dicts")
+            )
         elements = self._normalize(value)
         if not len(elements) == 2:
             raise ConversionError(_("Value must be a two-dimensional point"))
@@ -1133,13 +1163,21 @@ class GeoPointType(BaseType):
     def validate_range(self, value, context=None):
         latitude, longitude = self._normalize(value)
         if latitude < -90:
-            raise ValidationError(self.messages["point_min"].format("Latitude", latitude, "-90"))
+            raise ValidationError(
+                self.messages["point_min"].format("Latitude", latitude, "-90")
+            )
         if latitude > 90:
-            raise ValidationError(self.messages["point_max"].format("Latitude", latitude, "90"))
+            raise ValidationError(
+                self.messages["point_max"].format("Latitude", latitude, "90")
+            )
         if longitude < -180:
-            raise ValidationError(self.messages["point_min"].format("Longitude", longitude, -180))
+            raise ValidationError(
+                self.messages["point_min"].format("Longitude", longitude, -180)
+            )
         if longitude > 180:
-            raise ValidationError(self.messages["point_max"].format("Longitude", longitude, 180))
+            raise ValidationError(
+                self.messages["point_max"].format("Longitude", longitude, 180)
+            )
 
 
 class MultilingualStringType(BaseType):
@@ -1166,7 +1204,9 @@ class MultilingualStringType(BaseType):
         "locale_not_found": _("No requested locale was available."),
         "no_locale": _("No default or explicit locales were given."),
         "regex_locale": _("Name of locale {0} did not match validation regex."),
-        "regex_localized": _("String value in locale {0} did not match validation regex."),
+        "regex_localized": _(
+            "String value in locale {0} did not match validation regex."
+        ),
     }
 
     LOCALE_REGEX = r"^[a-z]{2}(:?_[A-Z]{2})?$"
@@ -1262,5 +1302,8 @@ class MultilingualStringType(BaseType):
             if self.regex is not None and self.regex.match(localized) is None:
                 raise ValidationError(self.messages["regex_localized"].format(locale))
 
-            if self.locale_regex is not None and self.locale_regex.match(locale) is None:
+            if (
+                self.locale_regex is not None
+                and self.locale_regex.match(locale) is None
+            ):
                 raise ValidationError(self.messages["regex_locale"].format(locale))

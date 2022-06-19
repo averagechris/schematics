@@ -26,7 +26,7 @@ def test_parse_with_defaults():
     assert dt.utcoffset() == timedelta(hours=-7, minutes=-30)
     assert dt.replace(tzinfo=None) == datetime(2015, 11, 8, 12, 34, 56, 36900)
 
-    assert dt == field.to_native(u"2015-11-08T12:34:56,0369−0730")  # minus U+2212
+    assert dt == field.to_native("2015-11-08T12:34:56,0369−0730")  # minus U+2212
 
     dt = field.to_native("2015-11-08 12:34:56.00200+02:00")
     assert dt.utcoffset() == timedelta(hours=2)
@@ -178,7 +178,9 @@ def test_to_native_from_datetime():
 
 def test_to_primitive():
 
-    dt = datetime(2015, 11, 8, 12, 34, 56, 36900, tzinfo=DateTimeType.offset_timezone(-7, -30))
+    dt = datetime(
+        2015, 11, 8, 12, 34, 56, 36900, tzinfo=DateTimeType.offset_timezone(-7, -30)
+    )
 
     assert DateTimeType().to_primitive(dt) == "2015-11-08T12:34:56.036900-0730"
     assert (
@@ -219,7 +221,9 @@ def test_timestamp():
     ts = field.to_primitive(datetime(2014, 5, 8, 22, 40, 40, tzinfo=gettz("PST8PDT")))
     assert ts == 1399614040.0
 
-    ts = field_no_tz.to_primitive(datetime(2014, 5, 8, 22, 40, 40, tzinfo=gettz("PST8PDT")))
+    ts = field_no_tz.to_primitive(
+        datetime(2014, 5, 8, 22, 40, 40, tzinfo=gettz("PST8PDT"))
+    )
     assert ts == 1399614040.0
 
     dt_with_tz = datetime(2015, 11, 8, 16, 00, tzinfo=DateTimeType.offset_timezone(2))
@@ -253,7 +257,9 @@ def test_validate_tz():
 
     dt_naive = lambda: datetime(2015, 6, 1, 14, 00)
     dt_utc = lambda: datetime(2015, 6, 1, 14, 00, tzinfo=UTC)
-    dt_plustwo = lambda: datetime(2015, 6, 1, 16, 00, tzinfo=DateTimeType.offset_timezone(2))
+    dt_plustwo = lambda: datetime(
+        2015, 6, 1, 16, 00, tzinfo=DateTimeType.offset_timezone(2)
+    )
     dt_nyc = lambda: datetime(2015, 6, 1, 10, 00, tzinfo=NYC)
 
     all_values = [dt_naive, dt_utc, dt_plustwo, dt_nyc]

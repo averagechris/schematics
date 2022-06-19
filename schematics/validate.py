@@ -64,12 +64,19 @@ def validate(
     if raw_data is None:
         raw_data = mutable
 
-    context = context or get_validation_context(partial=partial, strict=strict, convert=convert)
+    context = context or get_validation_context(
+        partial=partial, strict=strict, convert=convert
+    )
 
     errors = {}
     try:
         data = import_loop(
-            schema, mutable, raw_data, trusted_data=trusted_data, context=context, **kwargs
+            schema,
+            mutable,
+            raw_data,
+            trusted_data=trusted_data,
+            context=context,
+            **kwargs
         )
     except DataError as exc:
         errors = dict(exc.errors)
@@ -101,7 +108,9 @@ def _validate_model(schema, mutable, data, context):
     invalid_fields = []
 
     def has_validator(atom):
-        return atom.value is not Undefined and atom.name in schema_from(schema).validators
+        return (
+            atom.value is not Undefined and atom.name in schema_from(schema).validators
+        )
 
     for field_name, field, value in atoms(schema, data, filter=has_validator):
         try:

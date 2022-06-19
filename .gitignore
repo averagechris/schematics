@@ -22,3 +22,6 @@ docs/_build
 /.cache
 .coverage
 *.sqlite3
+/.pre-commit-config.yaml
+/.envrc
+/.direnv/

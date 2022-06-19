@@ -161,10 +161,10 @@ def test_dict_interface():
         name = StringType()
 
     p = Player()
-    p.name = u"Jóhann"
+    p.name = "Jóhann"
 
     assert "name" in p
-    assert p["name"] == u"Jóhann"
+    assert p["name"] == "Jóhann"
     assert "fake_key" not in p
 
 
@@ -188,7 +188,7 @@ def test_raises_validation_error_on_non_partial_validate():
 
     with pytest.raises(DataError) as exception:
         u.validate()
-    assert exception.value.errors, {"bio": [u"This field is required."]}
+    assert exception.value.errors, {"bio": ["This field is required."]}
 
 
 def test_model_inheritance():
@@ -198,7 +198,7 @@ def test_model_inheritance():
     class Child(Parent):
         bio = StringType()
 
-    input_data = {"bio": u"Genius", "name": u"Joey"}
+    input_data = {"bio": "Genius", "name": "Joey"}
 
     model = Child(input_data)
     model.validate()
@@ -215,11 +215,11 @@ def test_validation_uses_internal_state():
         name = StringType(required=True)
         age = IntType(required=True)
 
-    u = User({"name": u"Henry VIII"})
+    u = User({"name": "Henry VIII"})
     u.age = 99
     u.validate()
 
-    assert u.name == u"Henry VIII"
+    assert u.name == "Henry VIII"
     assert u.age == 99
 
 
@@ -254,7 +254,7 @@ def test_returns_nice_conversion_errors():
     errors = exception.value.errors
 
     assert errors == {
-        "age": [u"Value '100 years' is not int."],
+        "age": ["Value '100 years' is not int."],
     }
 
 
@@ -270,18 +270,18 @@ def test_returns_partial_data_with_conversion_errors():
     partial_data = exception.value.partial_data
 
     assert partial_data == {
-        "name": u"Jóhann",
+        "name": "Jóhann",
         "account_level": 3,
     }
 
 
 def test_field_default():
     class User(Model):
-        name = StringType(default=u"Doggy")
+        name = StringType(default="Doggy")
 
     u = User()
     assert User.name.__class__ == StringType
-    assert u.name == u"Doggy"
+    assert u.name == "Doggy"
 
 
 def test_attribute_default_to_none_if_no_value():
@@ -320,11 +320,11 @@ def test_default_value_when_updating_model():
 
 def test_explicit_values_override_defaults():
     class User(Model):
-        name = StringType(default=u"Doggy")
+        name = StringType(default="Doggy")
 
     u = User({"name": "Voffi"})
     u.validate()
-    assert u.name == u"Voffi"
+    assert u.name == "Voffi"
 
     u = User()
     u.name = "Guffi"
@@ -435,7 +435,10 @@ def test_subclassing_overides_roles():
         family_secret = StringType()
 
         class Options:
-            roles = {"grandchildren": whitelist("age"), "public": blacklist("id", "family_secret")}
+            roles = {
+                "grandchildren": whitelist("age"),
+                "public": blacklist("id", "family_secret"),
+            }
 
     gramps = GrandParent(
         {
@@ -463,14 +466,16 @@ def test_as_field_validate():
     class Card(Model):
         user = ModelType(User)
 
-    c = Card({"user": {"name": u"Doggy"}})
-    assert c.user.name == u"Doggy"
+    c = Card({"user": {"name": "Doggy"}})
+    assert c.user.name == "Doggy"
 
     with pytest.raises(ConversionError):
         c.user = [1]
 
     c.validate()
-    assert c.user.name == u"Doggy", u"Validation should not remove or modify existing data"
+    assert (
+        c.user.name == "Doggy"
+    ), "Validation should not remove or modify existing data"
 
 
 def test_model_field_validate_structure():
@@ -534,7 +539,10 @@ def test_model_deserialize_from_with_list():
     assert User({"name": "Ryan"}).username == "Ryan"
     assert User({"user": "Mike"}).username == "Mike"
     assert User({"username": "Mark"}).username == "Mark"
-    assert User({"username": "Mark", "name": "Second-class", "user": "key"}).username == "Mark"
+    assert (
+        User({"username": "Mark", "name": "Second-class", "user": "key"}).username
+        == "Mark"
+    )
 
 
 def test_model_deserialize_from_with_string():
@@ -734,7 +742,7 @@ def test_repr():
     inst = FooModel({"field1": "foo", "field2": "bar"})
     assert repr(inst) == "<FooModel: foo, bar>"
 
-    inst = FooModel({"field1": u"é", "field2": u"Ä"})
+    inst = FooModel({"field1": "é", "field2": "Ä"})
     assert repr(inst) == "<FooModel: é, Ä>"
 
 

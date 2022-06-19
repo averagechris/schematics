@@ -100,7 +100,11 @@ def test_dict_type_with_model_type_init_with_instance():
     assert d == {
         "id": 1,
         "categories": {
-            "math": {"category_slug": "math", "total_wins": 1, "xp_level": {"level": 1}},
+            "math": {
+                "category_slug": "math",
+                "total_wins": 1,
+                "xp_level": {"level": 1},
+            },
         },
     }
 

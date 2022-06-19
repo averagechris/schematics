@@ -151,7 +151,9 @@ def test_export_level(models):
             },
         }
     else:
-        raise Exception(f"Assertions missing for testcase m_level={m_level}, n_level={n_level}")
+        raise Exception(
+            f"Assertions missing for testcase m_level={m_level}, n_level={n_level}"
+        )
 
 
 def test_export_level_override(models):
@@ -239,4 +241,7 @@ def test_custom_converter():
 
     m = M(dict(x=1, y=None, z=3))
 
-    assert m.export(field_converter=converter, export_level=DEFAULT) == {"x": 1, "y": None}
+    assert m.export(field_converter=converter, export_level=DEFAULT) == {
+        "x": 1,
+        "y": None,
+    }

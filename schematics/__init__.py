@@ -1,4 +1,4 @@
-__version__ = "3.0.0"
+_version__ = "3.0.0"
 
 from .models import Model
 

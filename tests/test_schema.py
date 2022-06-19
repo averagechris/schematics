@@ -26,7 +26,10 @@ def player_schema():
         Field("id", IntType()),
         Field("first_name", StringType(required=True)),
         Field("last_name", StringType(required=True)),
-        Field("full_name", calculated(type=StringType(), fget=get_full_name, fset=set_full_name)),
+        Field(
+            "full_name",
+            calculated(type=StringType(), fget=get_full_name, fset=set_full_name),
+        ),
     )
 
     return schema
@@ -52,11 +55,21 @@ def test_functional_schema(player_schema, player_data):
     data = convert(schema, data, partial=True)
     assert data == expected  # state = 'CONVERTED'
 
-    expected = {"id": 42, "first_name": "Arthur", "last_name": "Dent", "full_name": "Arthur Dent"}
+    expected = {
+        "id": 42,
+        "first_name": "Arthur",
+        "last_name": "Dent",
+        "full_name": "Arthur Dent",
+    }
     data = validate(schema, data, convert=False, partial=False)
     assert data == expected  # state = 'VALIDATED'
 
-    expected = {"id": 42, "first_name": "Arthur", "last_name": "Dent", "full_name": "Arthur Dent"}
+    expected = {
+        "id": 42,
+        "first_name": "Arthur",
+        "last_name": "Dent",
+        "full_name": "Arthur Dent",
+    }
     data = to_primitive(schema, data)
     assert data == expected  # state = 'SERIALIZED'
 
@@ -102,7 +115,10 @@ def test_object_model_equivalence():
         Field("id", IntType()),
         Field("first_name", StringType(required=True)),
         Field("last_name", StringType(required=True)),
-        Field("full_name", calculated(type=StringType(), fget=get_full_name, fset=set_full_name)),
+        Field(
+            "full_name",
+            calculated(type=StringType(), fget=get_full_name, fset=set_full_name),
+        ),
     )
 
     # object

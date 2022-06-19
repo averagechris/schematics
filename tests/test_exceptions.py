@@ -98,8 +98,8 @@ def test_error_message_object():
         ErrorMessage("foo", info="bar"),
         BaseError([ErrorMessage("foo", info="bar")]),
         BaseError({"foo": "bar"}),
-        ErrorMessage(u"é"),
-        ValidationError(u"é"),
+        ErrorMessage("é"),
+        ValidationError("é"),
     ],
 )
 def test_exception_repr(error):

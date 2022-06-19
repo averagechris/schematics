@@ -253,29 +253,32 @@ def test_conversion_with_validation(
     if init_to_none:
         partial_data = {
             "intfield": 1,
-            "reqfield": u"foo",
+            "reqfield": "foo",
             "matrixfield": None,
             "modelfield": {
                 "intfield": None,
-                "reqfield": u"bar",
+                "reqfield": "bar",
                 "matrixfield": None,
                 "modelfield": {
                     "reqfield": None,
                     "listfield": None,
-                    "modelfield": M({"intfield": 0, "reqfield": u"foo", "listfield": None}),
+                    "modelfield": M(
+                        {"intfield": 0, "reqfield": "foo", "listfield": None}
+                    ),
                 },
             },
         }
     else:
         partial_data = {
             "intfield": 1,
-            "reqfield": u"foo",
+            "reqfield": "foo",
             "modelfield": {
-                "reqfield": u"bar",
+                "reqfield": "bar",
                 "modelfield": {
                     "listfield": None,
                     "modelfield": M(
-                        {"intfield": 0, "reqfield": u"foo", "listfield": None}, init=False
+                        {"intfield": 0, "reqfield": "foo", "listfield": None},
+                        init=False,
                     ),
                 },
             },

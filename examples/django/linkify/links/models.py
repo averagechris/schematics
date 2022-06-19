@@ -5,7 +5,7 @@ class Tag(models.Model):
     title = models.CharField(max_length=50)
 
     def to_dict(self):
-        return {'id': self.id, 'title': self.title}
+        return {"id": self.id, "title": self.title}
 
 
 class Link(models.Model):
@@ -14,9 +14,12 @@ class Link(models.Model):
     tags = models.ManyToManyField(Tag)
 
     def to_dict(self):
-        return {'id': self.id, 'title': self.title,
-                'url': self.url, 'tags': [tag.to_dict()
-                                          for tag in self.tags.all()]}
+        return {
+            "id": self.id,
+            "title": self.title,
+            "url": self.url,
+            "tags": [tag.to_dict() for tag in self.tags.all()],
+        }
 
     def attach_tags(self, tags):
         for tag in tags:

@@ -60,7 +60,12 @@ def test_import_data_with_error(init):
     ],
 )
 def test_complex_import_data(
-    recursive, preconvert_source, populate_source, populate_target, init_to_none, populated_result
+    recursive,
+    preconvert_source,
+    populate_source,
+    populate_target,
+    init_to_none,
+    populated_result,
 ):
     class M(Model):
         intfield = IntType(max_value=2)

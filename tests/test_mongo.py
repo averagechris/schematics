@@ -1,4 +1,6 @@
+import pytest
 from bson.objectid import ObjectId
+
 from schematics.contrib.mongo import ObjectIdType
 from schematics.exceptions import ConversionError
 

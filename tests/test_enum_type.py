@@ -14,7 +14,6 @@ try:
         A = 1
         B = 1
 
-
 except ImportError:
     Enum = None
 

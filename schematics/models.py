@@ -89,7 +89,9 @@ class ModelMeta(type):
 
         # Parse this class's attributes into schema structures
         for key, value in attrs.items():
-            if key.startswith("validate_") and isinstance(value, (FunctionType, classmethod)):
+            if key.startswith("validate_") and isinstance(
+                value, (FunctionType, classmethod)
+            ):
                 validator_functions[key[9:]] = prepare_validator(value, 4)
             if isinstance(value, BaseType):
                 fields[key] = value
@@ -296,7 +298,9 @@ class Model(metaclass=ModelMeta):
         :param raw_data:
             The data to be imported.
         """
-        data = self._convert(raw_data, trusted_data=dict(self), recursive=recursive, **kwargs)
+        data = self._convert(
+            raw_data, trusted_data=dict(self), recursive=recursive, **kwargs
+        )
         self._data.converted.update(data)
         if kwargs.get("validate"):
             self.validate(convert=False)
@@ -310,7 +314,11 @@ class Model(metaclass=ModelMeta):
         :param raw_data:
             New data to be imported and converted
         """
-        raw_data = {key: raw_data[key] for key in raw_data} if raw_data else self._data.converted
+        raw_data = (
+            {key: raw_data[key] for key in raw_data}
+            if raw_data
+            else self._data.converted
+        )
         kwargs["trusted_data"] = kwargs.get("trusted_data") or {}
         kwargs["convert"] = getattr(context, "convert", kwargs.get("convert", True))
         if self._data.unsafe:
@@ -320,7 +328,9 @@ class Model(metaclass=ModelMeta):
             kwargs["convert"] = True
         should_validate = getattr(context, "validate", kwargs.get("validate", False))
         func = validate if should_validate else convert
-        return func(self._schema, self, raw_data=raw_data, oo=True, context=context, **kwargs)
+        return func(
+            self._schema, self, raw_data=raw_data, oo=True, context=context, **kwargs
+        )
 
     def export(self, field_converter=None, role=None, app_data=None, **kwargs):
         return export_loop(
@@ -430,7 +440,9 @@ class Model(metaclass=ModelMeta):
         raise UnknownFieldError(self, name)
 
     def __contains__(self, name):
-        serializables = {k for k, t in self._schema.fields.items() if isinstance(t, Serializable)}
+        serializables = {
+            k for k, t in self._schema.fields.items() if isinstance(t, Serializable)
+        }
         return (
             name in self._data and getattr(self, name, Undefined) is not Undefined
         ) or name in serializables

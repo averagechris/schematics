@@ -483,7 +483,10 @@ def test_multilingualstring_should_validate_regex():
     with pytest.raises(ValidationError):
         MultilingualStringType(locale_regex=r"^\d*$").validate({"en_US": "foo"})
 
-    assert MultilingualStringType(locale_regex=None).validate_regex({"en_US": "foo"}) is None
+    assert (
+        MultilingualStringType(locale_regex=None).validate_regex({"en_US": "foo"})
+        is None
+    )
 
 
 def test_multilingualstring_should_handle_none():
@@ -516,7 +519,8 @@ def test_multilingual_string_should_emit_string_with_explicit_locale():
 
     assert (
         mls.to_primitive(
-            {"en_US": "snake", "fr_FR": "serpent"}, context=Context(app_data={"locale": "fr_FR"})
+            {"en_US": "snake", "fr_FR": "serpent"},
+            context=Context(app_data={"locale": "fr_FR"}),
         )
         == "serpent"
     )
@@ -536,7 +540,9 @@ def test_multilingual_string_without_matching_locale_should_explode():
         mls.to_primitive({"fr_FR": "serpent"})
 
     with pytest.raises(ConversionError):
-        mls.to_primitive({"en_US": "snake"}, context=Context(app_data={"locale": "fr_FR"}))
+        mls.to_primitive(
+            {"en_US": "snake"}, context=Context(app_data={"locale": "fr_FR"})
+        )
 
 
 def test_multilingual_string_should_accept_lists_of_locales():
@@ -550,14 +556,18 @@ def test_multilingual_string_should_accept_lists_of_locales():
 
     assert mls.to_primitive(strings) == "serpent"
     assert (
-        mls.to_primitive(strings, context=Context(app_data={"locale": ["es_MX", "bar"]}))
+        mls.to_primitive(
+            strings, context=Context(app_data={"locale": ["es_MX", "bar"]})
+        )
         == "serpiente"
     )
 
     mls = MultilingualStringType()
 
     assert (
-        mls.to_primitive(strings, context=Context(app_data={"locale": ["foo", "es_MX", "fr_FR"]}))
+        mls.to_primitive(
+            strings, context=Context(app_data={"locale": ["foo", "es_MX", "fr_FR"]})
+        )
         == "serpiente"
     )
 

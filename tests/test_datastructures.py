@@ -14,7 +14,9 @@ def test_data_object_basics():
     assert d != DataObject(x=2, y=1)
     assert d != {"x": 1, "y": 2}
 
-    assert DataObject({"f": DataObject({"g": {"x": 1, "y": 2}})}) != {"f": {"g": {"x": 1, "y": 2}}}
+    assert DataObject({"f": DataObject({"g": {"x": 1, "y": 2}})}) != {
+        "f": {"g": {"x": 1, "y": 2}}
+    }
 
     assert hasattr(d, "x")
     assert "x" in d
@@ -38,7 +40,11 @@ def test_data_object_basics():
 
     assert len(d) == 3
 
-    assert set(((k, v) for k, v in d)) == set(d._items()) == set((("x", 1), ("y", 2), ("z", 3)))
+    assert (
+        set(((k, v) for k, v in d))
+        == set(d._items())
+        == set((("x", 1), ("y", 2), ("z", 3)))
+    )
 
     assert set((k for k, v in d)) == set(d._keys()) == set(("x", "y", "z"))
 

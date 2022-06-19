@@ -194,7 +194,9 @@ def import_loop(
         data[field_name] = value
 
     if not context.validate:
-        for field_name, field, value in atoms(schema, raw_data, filter=atom_filter.has_setter):
+        for field_name, field, value in atoms(
+            schema, raw_data, filter=atom_filter.has_setter
+        ):
             data[field_name] = value
 
     if errors:
@@ -211,7 +213,9 @@ def _mutate(schema, mutable, raw_data, context):
     and create data values on mutable.
     """
     errors = {}
-    for field_name, field, value in atoms(schema, raw_data, filter=atom_filter.has_setter):
+    for field_name, field, value in atoms(
+        schema, raw_data, filter=atom_filter.has_setter
+    ):
         if value is Undefined:
             continue
         try:

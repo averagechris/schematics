@@ -80,12 +80,22 @@ def test_submodel_required_field():
 
     with pytest.raises(DataError):
         m1 = MainModel(
-            {"modelfield": {"req_field": "qweasd", "submodelfield": {"opt_field": "qweasd"}}},
+            {
+                "modelfield": {
+                    "req_field": "qweasd",
+                    "submodelfield": {"opt_field": "qweasd"},
+                }
+            },
             partial=False,
         )
 
     m1 = MainModel(
-        {"modelfield": {"req_field": "qweasd", "submodelfield": {"req_field": "qweasd"}}},
+        {
+            "modelfield": {
+                "req_field": "qweasd",
+                "submodelfield": {"req_field": "qweasd"},
+            }
+        },
         partial=False,
     )
 

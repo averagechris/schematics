@@ -103,7 +103,7 @@ def test_model_type():
     class Card(Model):
         user = ModelType(User)
 
-    c = Card({"user": {"name": u"Doggy"}})
+    c = Card({"user": {"name": "Doggy"}})
     assert isinstance(c.user, User)
     assert c.user.name == "Doggy"
 

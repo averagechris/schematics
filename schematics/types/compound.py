@@ -76,7 +76,9 @@ class CompoundType(BaseType):
         as the ``nested_field`` keyword argument.
         """
         if not isinstance(field, BaseType):
-            nested_field = options.pop("nested_field", None) or options.pop("compound_field", None)
+            nested_field = options.pop("nested_field", None) or options.pop(
+                "compound_field", None
+            )
             if nested_field:
                 field = field(field=nested_field, **options)
             else:
@@ -159,7 +161,8 @@ class ModelType(CompoundType):
             model_class = field_model_class
         else:
             raise ConversionError(
-                _("Input must be a mapping or '%s' instance") % field_model_class.__name__
+                _("Input must be a mapping or '%s' instance")
+                % field_model_class.__name__
             )
         if context.convert and context.oo:
             return model_class(value, context=context)
@@ -314,7 +317,9 @@ class DictType(CompoundType):
         errors = {}
         for k, v in value.items():
             try:
-                data[self.coerce_key(k)] = context.field_converter(self.field, v, context)
+                data[self.coerce_key(k)] = context.field_converter(
+                    self.field, v, context
+                )
             except BaseError as exc:
                 errors[k] = exc
         if errors:
@@ -360,7 +365,8 @@ class PolyModelType(CompoundType):
             allow_subclasses = False
         else:
             raise Exception(
-                "The first argument to PolyModelType.__init__() " "must be a model or an iterable."
+                "The first argument to PolyModelType.__init__() "
+                "must be a model or an iterable."
             )
 
         self.claim_function = kwargs.pop("claim_function", None)
@@ -376,7 +382,9 @@ class PolyModelType(CompoundType):
                 if m == owner_model.__name__:
                     resolved_classes.append(owner_model)
                 else:
-                    raise Exception("PolyModelType: Unable to resolve model '{}'.".format(m))
+                    raise Exception(
+                        "PolyModelType: Unable to resolve model '{}'.".format(m)
+                    )
             else:
                 resolved_classes.append(m)
         self.model_classes = tuple(resolved_classes)
@@ -407,9 +415,9 @@ class PolyModelType(CompoundType):
                 else:
                     instanceof_msg = self.model_classes[0].__name__
                 raise ConversionError(
-                    _("Please use a mapping for this field or " "an instance of {}").format(
-                        instanceof_msg
-                    )
+                    _(
+                        "Please use a mapping for this field or " "an instance of {}"
+                    ).format(instanceof_msg)
                 )
 
         model_class = self.find_model(value)
@@ -452,7 +460,9 @@ class PolyModelType(CompoundType):
 
         model_class = model_instance.__class__
         if not self.is_allowed_model(model_instance):
-            raise Exception("Cannot export: {} is not an allowed type".format(model_class))
+            raise Exception(
+                "Cannot export: {} is not an allowed type".format(model_class)
+            )
 
         return model_instance.export(context=context)
 

@@ -55,7 +55,7 @@ class BaseError(Exception):
 
     @staticmethod
     def _freeze(obj):
-        """ freeze common data structures to something immutable. """
+        """freeze common data structures to something immutable."""
         if isinstance(obj, dict):
             return FrozenDict(obj)
         if isinstance(obj, list):
@@ -64,7 +64,7 @@ class BaseError(Exception):
 
     @classmethod
     def _to_primitive(cls, obj):
-        """ recursive to_primitive for basic data types. """
+        """recursive to_primitive for basic data types."""
         if isinstance(obj, str):
             return obj
         if isinstance(obj, Sequence):
@@ -137,7 +137,9 @@ class FieldError(BaseError, Sequence):
     def __init__(self, *args, **kwargs):
 
         if type(self) is FieldError:
-            raise NotImplementedError("Please raise either ConversionError or ValidationError.")
+            raise NotImplementedError(
+                "Please raise either ConversionError or ValidationError."
+            )
         if len(args) == 0:
             raise TypeError("Please provide at least one error or error message.")
         if kwargs:
@@ -183,7 +185,7 @@ class FieldError(BaseError, Sequence):
 
 
 class ConversionError(FieldError, TypeError):
-    """ Exception raised when data cannot be converted to the correct python type """
+    """Exception raised when data cannot be converted to the correct python type"""
 
 
 class ValidationError(FieldError, ValueError):

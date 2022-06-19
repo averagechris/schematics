@@ -35,7 +35,10 @@ primitives = {
     "stringfield": "foobar",
     "dtfield": "2015-11-26T09:00:00.000000",
     "utcfield": "2015-11-26T07:00:00.000000Z",
-    "modelfield": {"floatfield": 1.0, "uuidfield": "54020382-291e-4192-b370-4850493ac5bc"},
+    "modelfield": {
+        "floatfield": 1.0,
+        "uuidfield": "54020382-291e-4192-b370-4850493ac5bc",
+    },
 }
 
 natives = {

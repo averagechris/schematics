@@ -24,7 +24,7 @@ def test_serializable():
     assert d == {"country_code": "US", "country_name": "United States"}
 
     d = location_US.to_native()
-    assert d == {"country_code": u"US", "country_name": "United States"}
+    assert d == {"country_code": "US", "country_name": "United States"}
 
     location_IS = Location({"country_code": "IS"})
 
@@ -256,7 +256,9 @@ def test_serializable_with_embedded_models():
 
         @serializable(type=ModelType(ExperienceLevel))
         def xp_level(self):
-            return ExperienceLevel.from_total_points(self.total_points, self.category_slug)
+            return ExperienceLevel.from_total_points(
+                self.total_points, self.category_slug
+            )
 
     class PlayerInfo(Model):
         id = LongType()
@@ -388,8 +390,12 @@ def test_field_with_serialize_when_none():
 
 def test_field_with_serialize_when_none_on_outer_only():
     class M(Model):
-        listfield = ListType(StringType(serialize_when_none=True), serialize_when_none=False)
-        dictfield = DictType(StringType(serialize_when_none=True), serialize_when_none=False)
+        listfield = ListType(
+            StringType(serialize_when_none=True), serialize_when_none=False
+        )
+        dictfield = DictType(
+            StringType(serialize_when_none=True), serialize_when_none=False
+        )
 
     obj = M()
     obj.listfield = [None]
@@ -399,8 +405,12 @@ def test_field_with_serialize_when_none_on_outer_only():
 
 def test_field_with_serialize_when_none_on_inner_only():
     class M(Model):
-        listfield = ListType(StringType(serialize_when_none=False), serialize_when_none=True)
-        dictfield = DictType(StringType(serialize_when_none=False), serialize_when_none=True)
+        listfield = ListType(
+            StringType(serialize_when_none=False), serialize_when_none=True
+        )
+        dictfield = DictType(
+            StringType(serialize_when_none=False), serialize_when_none=True
+        )
 
     obj = M()
     obj.listfield = [None]
@@ -509,7 +519,9 @@ def test_serialize_none_fields_if_export_loop_says_so():
 
     q = TestModel({"inst_id": 1})
 
-    d = export_loop(TestModel, q, lambda field, value, context: None, export_level=DEFAULT)
+    d = export_loop(
+        TestModel, q, lambda field, value, context: None, export_level=DEFAULT
+    )
     assert d == {"inst_id": None}
 
 
@@ -519,7 +531,9 @@ def test_serialize_print_none_always_gets_you_something():
 
     q = TestModel()
 
-    d = export_loop(TestModel, q, lambda field, value, context: None, export_level=DEFAULT)
+    d = export_loop(
+        TestModel, q, lambda field, value, context: None, export_level=DEFAULT
+    )
     assert d == {}
 
 
@@ -593,11 +607,13 @@ def test_roles_work_with_subclassing():
     class AddressWithPostalCode(Address):
         postal_code = IntType()
 
-    a = AddressWithPostalCode(dict(postal_code=101, city=u"Reykjavík", private_key="secret"))
+    a = AddressWithPostalCode(
+        dict(postal_code=101, city="Reykjavík", private_key="secret")
+    )
 
     d = a.serialize(role="public")
     assert d == {
-        "city": u"Reykjavík",
+        "city": "Reykjavík",
         "postal_code": 101,
     }
 
@@ -655,7 +671,9 @@ def test_doesnt_fail_if_role_isnt_found_on_embedded_models():
         class Options:
             roles = {"public": blacklist("secret")}
 
-    p = Player(dict(id="1", secret="super_secret", xp_level={"level": 1, "title": "Starter"}))
+    p = Player(
+        dict(id="1", secret="super_secret", xp_level={"level": 1, "title": "Starter"})
+    )
 
     d = p.serialize(role="public")
     assert d == {
@@ -702,7 +720,9 @@ def test_uses_roles_on_embedded_models_if_found():
         class Options:
             roles = {"public": blacklist("secret")}
 
-    p = Player(dict(id="1", secret="super_secret", xp_level={"level": 1, "title": "Starter"}))
+    p = Player(
+        dict(id="1", secret="super_secret", xp_level={"level": 1, "title": "Starter"})
+    )
 
     d = p.serialize(role="public")
     assert d == {

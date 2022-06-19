@@ -1,14 +1,14 @@
 import json
 
-from django.http import JsonResponse, Http404
-from django.views.generic import View
-from django.views.decorators.csrf import csrf_exempt
+from django.http import Http404, JsonResponse
 from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import View
 
-from schematics.exceptions import ModelValidationError, ModelConversionError
+from schematics.exceptions import ModelConversionError, ModelValidationError
 
-from .serializers import LinkCreateSerializer, LinkReadSerializer, LinkUpdateSerializer
 from .models import Link, Tag
+from .serializers import LinkCreateSerializer, LinkReadSerializer, LinkUpdateSerializer
 
 
 class CSRFExemptMixin(View):

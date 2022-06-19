@@ -15,7 +15,7 @@ from schematics.types.compound import DictType, ListType, ModelType
 from schematics.types.serializable import serializable
 from schematics.validate import prepare_validator
 
-future_error_msg = u"Future dates are not valid"
+future_error_msg = "Future dates are not valid"
 
 
 def test_choices_validates():
@@ -98,7 +98,7 @@ def test_custom_validators():
 
 def test_messages_subclassing():
     class MyStringType(StringType):
-        MESSAGES = {"required": u"Never forget"}
+        MESSAGES = {"required": "Never forget"}
 
     class TestDoc(Model):
         title = MyStringType(required=True)
@@ -107,18 +107,18 @@ def test_messages_subclassing():
         TestDoc({"title": None}).validate()
 
     messages = exception.value.errors
-    assert u"Never forget" in messages["title"]
+    assert "Never forget" in messages["title"]
 
 
 def test_messages_instance_level():
     class TestDoc(Model):
-        title = StringType(required=True, messages={"required": u"Never forget"})
+        title = StringType(required=True, messages={"required": "Never forget"})
 
     with pytest.raises(DataError) as exception:
         TestDoc({"title": None}).validate()
 
     messages = exception.value.errors
-    assert u"Never forget" in messages["title"]
+    assert "Never forget" in messages["title"]
 
 
 def test_model_validators():
@@ -182,7 +182,7 @@ def test_multi_key_validation():
 
         def validate_publish(self, data, dt, context):
             if data["should_raise"] is True:
-                raise ValidationError(u"")
+                raise ValidationError("")
             return dt
 
     with pytest.raises(DataError):
@@ -200,15 +200,17 @@ def test_multi_key_validation_part_two():
         call_me = BooleanType(default=False)
 
         def validate_call_me(self, data, value, context):
-            if data["name"] == u"Brad" and value is True:
-                raise ValidationError(u"I'm sorry I never call people who's name is Brad")
+            if data["name"] == "Brad" and value is True:
+                raise ValidationError(
+                    "I'm sorry I never call people who's name is Brad"
+                )
             return value
 
-    Signup({"name": u"Brad"}).validate()
-    Signup({"name": u"Brad", "call_me": False}).validate()
+    Signup({"name": "Brad"}).validate()
+    Signup({"name": "Brad", "call_me": False}).validate()
 
     with pytest.raises(DataError):
-        Signup({"name": u"Brad", "call_me": True}).validate()
+        Signup({"name": "Brad", "call_me": True}).validate()
 
 
 def test_multi_key_validation_fields_order():
@@ -217,21 +219,21 @@ def test_multi_key_validation_fields_order():
         call_me = BooleanType(default=False)
 
         def validate_name(self, data, value, context):
-            if data["name"] == u"Brad":
-                value = u"Joe"
+            if data["name"] == "Brad":
+                value = "Joe"
                 data["name"] = value
                 return value
             return value
 
         def validate_call_me(self, data, value, context):
-            if data["name"] == u"Joe":
-                raise ValidationError(u"Don't try to decept me! You're Joe!")
+            if data["name"] == "Joe":
+                raise ValidationError("Don't try to decept me! You're Joe!")
             return value
 
-    Signup({"name": u"Tom"}).validate()
+    Signup({"name": "Tom"}).validate()
 
     with pytest.raises(DataError):
-        Signup({"name": u"Brad"}).validate()
+        Signup({"name": "Brad"}).validate()
 
 
 def test_validate_discovers_classmethod():
@@ -240,10 +242,10 @@ def test_validate_discovers_classmethod():
 
         @classmethod
         def validate_foo(cls, data, value, context):
-            raise ValidationError(u"I'm a classmethod that should be discovered.")
+            raise ValidationError("I'm a classmethod that should be discovered.")
 
     with pytest.raises(DataError):
-        Foo({"foo": u"Bar"}).validate()
+        Foo({"foo": "Bar"}).validate()
 
 
 def test_basic_error():
@@ -298,8 +300,8 @@ def test_deep_errors_with_lists(idx1, idx2):
 
     valid_data = {
         "courses": [
-            {"id": "ENG103", "attending": [{"name": u"Danny"}, {"name": u"Sandy"}]},
-            {"id": "ENG203", "attending": [{"name": u"Danny"}, {"name": u"Sandy"}]},
+            {"id": "ENG103", "attending": [{"name": "Danny"}, {"name": "Sandy"}]},
+            {"id": "ENG203", "attending": [{"name": "Danny"}, {"name": "Sandy"}]},
         ]
     }
 
@@ -320,7 +322,7 @@ def test_deep_errors_with_lists(idx1, idx2):
             idx1: {
                 "attending": {
                     idx2: {
-                        "name": [u"This field is required."],
+                        "name": ["This field is required."],
                     },
                 },
             }
@@ -342,7 +344,7 @@ def test_merge_serializable_errors():
         @age.setter
         def age(self, value):
             if value < 0:
-                raise ValidationError(u"Negative age is not valid")
+                raise ValidationError("Negative age is not valid")
             self.birthday = now - datetime.timedelta(value * 365)
 
     person = Person({"age": -1})
@@ -371,15 +373,15 @@ def test_deep_errors_with_dicts():
             "ENG103": {
                 "id": "ENG103",
                 "attending": [
-                    {"name": u"Danny"},
-                    {"name": u"Sandy"},
+                    {"name": "Danny"},
+                    {"name": "Sandy"},
                 ],
             },
             "ENG203": {
                 "id": "ENG203",
                 "attending": [
-                    {"name": u"Danny"},
-                    {"name": u"Sandy"},
+                    {"name": "Danny"},
+                    {"name": "Sandy"},
                 ],
             },
         }
@@ -398,7 +400,7 @@ def test_deep_errors_with_dicts():
     messages = exception.value.errors
 
     assert messages == {
-        "courses": {"ENG103": {"attending": {0: {"name": [u"This field is required."]}}}}
+        "courses": {"ENG103": {"attending": {0: {"name": ["This field is required."]}}}}
     }
 
 
@@ -440,8 +442,8 @@ def test_custom_validator_raising_dicterror():
     messages = exception.value.errors
 
     assert messages == {
-        "bar": {"a": [u"Key a must be set."]},
-        "eggs": [u"Int value should be greater than or equal to 10."],
+        "bar": {"a": ["Key a must be set."]},
+        "eggs": ["Int value should be greater than or equal to 10."],
     }
 
 
@@ -460,11 +462,17 @@ def test_type_validator_inheritance():
         def validate_bar(self, value, context=None):
             pass
 
-    validators_custom = list(map(operator.attrgetter("__name__"), CustomIntType().validators))
-    validators_special = list(map(operator.attrgetter("__name__"), SpecialIntType().validators))
+    validators_custom = list(
+        map(operator.attrgetter("__name__"), CustomIntType().validators)
+    )
+    validators_special = list(
+        map(operator.attrgetter("__name__"), SpecialIntType().validators)
+    )
 
     assert (
-        validators_custom[0:2] == validators_special[0:2] == ["validate_choices", "validate_range"]
+        validators_custom[0:2]
+        == validators_special[0:2]
+        == ["validate_choices", "validate_range"]
     )  # from BaseType & IntType
 
     assert (
@@ -476,7 +484,9 @@ def test_type_validator_inheritance():
     assert validators_custom[4:] == []
     assert validators_special[4:] == ["validate_bar"]
 
-    assert SpecialIntType(max_value=1).validate(9)  # Overridden `validate_range()` does nothing.
+    assert SpecialIntType(max_value=1).validate(
+        9
+    )  # Overridden `validate_range()` does nothing.
 
 
 def test_model_validator_override():
@@ -558,7 +568,7 @@ def test_lazy_conversion_and_validation_exception_bundling():
         name = StringType(max_length=3)
         call_me = BooleanType()
 
-    user = Signup({"name": u"Arthur", "call_me": "Dent"}, lazy=True)
+    user = Signup({"name": "Arthur", "call_me": "Dent"}, lazy=True)
     with pytest.raises(DataError) as exception:
         user.validate()
     assert set(("name", "call_me")).issubset(exception.value.errors)

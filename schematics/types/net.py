@@ -84,7 +84,9 @@ class IPv6Type(IPAddressType):
     REGEX = re.compile(rf"^{IPV6}$", re.I + re.X)
 
     def _mock(self, context=None):
-        return "2001:db8:" + ":".join("%x" % (random.randrange(1 << 16)) for _ in range(6))
+        return "2001:db8:" + ":".join(
+            "%x" % (random.randrange(1 << 16)) for _ in range(6)
+        )
 
 
 ### MAC address
