@@ -16,7 +16,7 @@ jobs:
     - id: get-version
       name: get version
       run: |
-        VERSION=nix run .#schematics_version
+        VERSION=$(nix run .#schematics_version)
         echo ::set-output name=VERSION::$VERSION
     - uses: rickstaa/action-create-tag@v1
       with:
