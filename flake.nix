@@ -41,23 +41,39 @@
           pytestCheckHook
           python-dateutil
         ];
+      mkDevShell = pyPackageSet: schematicsDrv:
+        with pyPackageSet;
+          pkgs.mkShell {
+            inherit (schematicsDrv) propagatedNativeBuildInputs;
 
-      testDependencies = mkTestDependencies pkgs.python310Packages;
-      schematics = mkSchematics pkgs.python310Packages;
+            shellHook =
+              self.checks.${system}.pre-commit.shellHook
+              + ''
+                export PYTHONBREAKPOINT=ipdb.set_trace
+                export PYTHONDONTWRITEBYTECODE=1
+              '';
+            inputsFrom = [schematicsDrv];
+            buildInputs =
+              (mkTestDependencies pyPackageSet)
+              ++ [
+                pkgs.cachix
+                pkgs.nodePackages.pyright
+                schematicsDrv
+
+                # python dev deps (but not CI test deps)
+                black
+                flake8
+                flit
+                ipdb
+                ipython
+                isort
+                python
+              ];
+          };
+
+      schematics310 = mkSchematics pkgs.python310Packages;
       schematics39 = mkSchematics pkgs.python39Packages;
-      # TODO FIXME schematics311 seems fairly straightforward?
-      #
-      # >   File "/build/docutils-0.18.1/test/package_unittest.py", line 102, in loadTestModules
-      # >     module = import_module(mod)
-      # >              ^^^^^^^^^^^^^^^^^^
-      # >   File "/build/docutils-0.18.1/test/package_unittest.py", line 133, in import_module
-      # >     mod = __import__(name)
-      # >           ^^^^^^^^^^^^^^^^
-      # >   File "/build/docutils-0.18.1/test/test_parsers/test_rst/test_directives/test_tables.py", line 67, in <module>
-      # >     null_bytes_exception = DocutilsTestSupport.exception_data(null_bytes)[0]
-      # >                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^
-      # > TypeError: 'NoneType' object is not subscriptable
-      # schematics311 = mkSchematics pkgs.python311Packages;
+      schematics311 = mkSchematics pkgs.python311Packages;
 
       get_schematics_version = pkgs.writeShellApplication {
         name = "schematics_version";
@@ -72,7 +88,8 @@
       };
     in {
       checks = {
-        inherit schematics schematics39 get_schematics_version;
+        # schematics311 -- nix python 3.11 failing to compile rn
+        inherit schematics39 schematics310 get_schematics_version;
 
         pre-commit = pre-commit-hooks.lib.${system}.run {
           inherit src;
@@ -121,9 +138,8 @@
       };
 
       packages = {
-        inherit schematics39 schematics;
-        schematics310 = schematics;
-        default = schematics;
+        inherit schematics39 schematics310 schematics311;
+        default = schematics310;
       };
       apps = rec {
         pytest = flake-utils.lib.mkApp {
@@ -138,33 +154,12 @@
         };
       };
 
-      devShells.default = pkgs.mkShell {
-        inherit (self.packages.${system}.default) propagatedNativeBuildInputs;
-
-        shellHook =
-          self.checks.${system}.pre-commit.shellHook
-          + ''
-            export PYTHONBREAKPOINT=ipdb.set_trace
-            export PYTHONDONTWRITEBYTECODE=1
-          '';
-        inputsFrom = [self.packages.${system}.default];
-        buildInputs = with pkgs.python310Packages;
-          testDependencies
-          ++ [
-            pkgs.cachix
-            pkgs.nodePackages.pyright
-            self.packages.${system}.default
-
-            # python dev deps (but not CI test deps)
-            black
-            flake8
-            flit
-            ipdb
-            ipython
-            isort
-            python
-          ];
+      devShells = {
+        schematics39 = mkDevShell pkgs.python39Packages schematics39;
+        schematics310 = mkDevShell pkgs.python310Packages schematics310;
+        schematics311 = mkDevShell pkgs.python310Packages schematics311;
       };
+      devShells.default = self.outputs.devShells.${system}.schematics310;
 
       formatter = pkgs.alejandra;
     });

@@ -12,7 +12,7 @@ The latest development version can be obtained via git::
 
   $ pip install git+https://github.com/schematics/schematics.git#egg=schematics
 
-Schematics currently supports Python versions 3.6, 3.7, 3.8, and 3.9.
+Schematics currently supports Python versions 3.9, 3.10, and 3.11.
 
 .. _install_from_github:
 

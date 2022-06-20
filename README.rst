@@ -3,7 +3,9 @@ About
 
 This is a Fork from the hard work of the maintainers at
 https://github.com/schematics/schematics.
+
 Here's a summary of the changes:
+
 + add support for python 3.10+
 + drop support for python version 3.6, 3.7, and 3.8
 + run black and isort on the code base
