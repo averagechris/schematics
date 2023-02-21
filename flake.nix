@@ -18,11 +18,12 @@
     pre-commit-hooks,
     ...
   }:
-    flake-utils.lib.eachSystem [flake-utils.lib.system.x86_64-linux] (system: let
+    flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {
         inherit system;
       };
       inherit (pkgs) lib;
+      defaultPackageSet = pkgs.python311Packages;
       src = lib.cleanSource ./.;
       mkSchematics = pyPackageSet:
         with pyPackageSet;
@@ -88,8 +89,7 @@
       };
     in {
       checks = {
-        # schematics311 -- nix python 3.11 failing to compile rn
-        inherit schematics39 schematics310 get_schematics_version;
+        inherit schematics39 schematics310 schematics311 get_schematics_version;
 
         pre-commit = pre-commit-hooks.lib.${system}.run {
           inherit src;
@@ -101,7 +101,7 @@
               enable = false;
               entry = "${pkgs.writeShellApplication {
                 name = "check-flake8";
-                runtimeInputs = with pkgs.python310Packages; [flake8];
+                runtimeInputs = with defaultPackageSet; [flake8];
                 text = "flake8 schematics";
               }}/bin/check-flake8";
               name = "flake8";
@@ -121,7 +121,7 @@
               enable = false;
               entry = "${pkgs.writeShellApplication {
                 name = "check-pyright";
-                runtimeInputs = with pkgs.python310Packages; [
+                runtimeInputs = with defaultPackageSet; [
                   pkgs.nodePackages.pyright
                   pytest
                   python
@@ -142,12 +142,21 @@
         default = schematics310;
       };
       apps = rec {
-        pytest = flake-utils.lib.mkApp {
+        pytest39 = flake-utils.lib.mkApp {
+          drv = pkgs.python39Packages.pytest;
+        };
+        pytest310 = flake-utils.lib.mkApp {
           drv = pkgs.python310Packages.pytest;
+        };
+        pytest311 = flake-utils.lib.mkApp {
+          drv = pkgs.python311Packages.pytest;
+        };
+        pytest = flake-utils.lib.mkApp {
+          drv = defaultPackageSet.pytest;
         };
         default = pytest;
         flit = flake-utils.lib.mkApp {
-          drv = pkgs.python310Packages.flit;
+          drv = defaultPackageSet.flit;
         };
         schematics_version = flake-utils.lib.mkApp {
           drv = get_schematics_version;
@@ -157,9 +166,9 @@
       devShells = {
         schematics39 = mkDevShell pkgs.python39Packages schematics39;
         schematics310 = mkDevShell pkgs.python310Packages schematics310;
-        schematics311 = mkDevShell pkgs.python310Packages schematics311;
+        schematics311 = mkDevShell pkgs.python311Packages schematics311;
       };
-      devShells.default = self.outputs.devShells.${system}.schematics310;
+      devShells.default = self.outputs.devShells.${system}.schematics311;
 
       formatter = pkgs.alejandra;
     });
