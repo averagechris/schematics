@@ -10,17 +10,18 @@ jobs:
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 2
-    - uses: cachix/install-nix-action@v17
-    - uses: cachix/cachix-action@v10
-      with:
-        name: averagechris-schematics
-        authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-    - run: nix flake check
-    - name: ensure new version
-      run: |
-        git diff HEAD^..HEAD -- schematics/__init__.py | grep -q "$(nix run .#schematics_version)" \
-        || echo "You must bump the version in schematics/__init__.py"
-    - run: nix run .#flit -- build
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - uses: cachix/install-nix-action@v17
+      - uses: cachix/cachix-action@v10
+        with:
+          name: averagechris-schematics
+          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+      # unit tests are run as part of `checks` in the build package's test phase
+      - run: nix flake check
+      - name: ensure new version
+        run: |
+          git diff HEAD^..HEAD -- schematics/__init__.py | grep -q "$(nix run .#schematics_version)" \
+          || echo "You must bump the version in schematics/__init__.py"
+      - run: nix run .#flit -- build
